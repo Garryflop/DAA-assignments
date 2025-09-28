@@ -102,7 +102,7 @@ public class MetricsCollector {
         return (endTime - startTime) / 1_000_000.0;
     }
 
-    // Setters and getters
+    // Set and get
     public void setInputSize(int size) {
         this.inputSize = size;
     }
