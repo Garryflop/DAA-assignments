@@ -1,6 +1,7 @@
 package org.AITU.algorithms;
 
 import org.AITU.metrics.MetricsCollector;
+import org.AITU.utils.ArrayUtils;
 
 /**
  * MergeSort implementation with optimizations:
@@ -51,6 +52,7 @@ public class MergeSort {
         try {
             // Base case: use insertion sort for small arrays
             if (high - low < INSERTION_SORT_CUTOFF) {
+                ArrayUtils.insertionSort(arr, low, high, metrics);
                 return;
             }
 
