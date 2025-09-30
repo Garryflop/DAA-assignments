@@ -127,18 +127,6 @@ java -cp target/classes org.AITU.Main select 5000 select_results.csv
 java -cp target/classes org.AITU.Main closest 2000 closest_results.csv
 ```
 
-#### Additional Commands
-```bash
-# Run correctness tests (from Main class)
-java -cp target/classes org.AITU.Main test
-
-# Run demonstration
-java -cp target/classes org.AITU.Main demo
-
-# Run JMH benchmarks (after packaging)
-java -jar target/benchmarks.jar
-```
-
 ## 📁 Project Structure
 ```
 DAA-assignments/

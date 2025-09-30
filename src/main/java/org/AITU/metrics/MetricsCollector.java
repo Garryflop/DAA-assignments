@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Metrics collection system for algorithm performance analysis
@@ -13,7 +14,7 @@ public class MetricsCollector {
 
     // Thread-local storage for recursion depth tracking
     private static ThreadLocal<Integer> currentDepth = ThreadLocal.withInitial(() -> 0);
-    private static ThreadLocal<Integer> maxDepth = ThreadLocal.withInitial(() -> 0);
+    private static ThreadLocal<Integer> threadMaxDepth = ThreadLocal.withInitial(() -> 0);
 
     // Counters
     private long comparisons;
@@ -23,6 +24,9 @@ public class MetricsCollector {
     private long endTime;
     private int inputSize;
     private String algorithmName;
+
+    // recorded per-run values (instance)
+    private int recordedMaxDepth;
 
     // Storage for multiple runs
     private static List<MetricsCollector> allMetrics = new ArrayList<>();
@@ -39,15 +43,17 @@ public class MetricsCollector {
         startTime = 0;
         endTime = 0;
         inputSize = 0;
-        resetDepth();
+        recordedMaxDepth = 0;
+        // don't automatically reset thread depth here unless you intend to
+        // resetDepth(); // optional: can be called externally before a run
     }
 
     // Depth tracking methods
     public static void enterRecursion() {
         int depth = currentDepth.get() + 1;
         currentDepth.set(depth);
-        if (depth > maxDepth.get()) {
-            maxDepth.set(depth);
+        if (depth > threadMaxDepth.get()) {
+            threadMaxDepth.set(depth);
         }
     }
 
@@ -56,12 +62,12 @@ public class MetricsCollector {
     }
 
     public static int getMaxDepth() {
-        return maxDepth.get();
+        return threadMaxDepth.get();
     }
 
     public static void resetDepth() {
         currentDepth.set(0);
-        maxDepth.set(0);
+        threadMaxDepth.set(0);
     }
 
     // Counter methods
@@ -140,25 +146,27 @@ public class MetricsCollector {
         copy.startTime = this.startTime;
         copy.endTime = this.endTime;
         copy.inputSize = this.inputSize;
+        // save the thread-local max depth into the instance copy
+        copy.recordedMaxDepth = MetricsCollector.getMaxDepth();
         return copy;
     }
 
     // CSV export
     public static void exportToCSV(String filename) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
-            // Write header
+            // Заголовки
             writer.println("Algorithm,InputSize,TimeMillis,Comparisons,Swaps,Allocations,MaxDepth");
 
-            // Write data
             for (MetricsCollector metrics : allMetrics) {
-                writer.printf("%s,%d,%.3f,%d,%d,%d,%d%n",
+                // Используем Locale.US чтобы десятичный разделитель был точкой (.)
+                writer.printf(Locale.US, "%s,%d,%.3f,%d,%d,%d,%d%n",
                         metrics.algorithmName,
                         metrics.inputSize,
                         metrics.getElapsedTimeMillis(),
                         metrics.comparisons,
                         metrics.swaps,
                         metrics.allocations,
-                        getMaxDepth()
+                        metrics.recordedMaxDepth
                 );
             }
 
@@ -177,7 +185,7 @@ public class MetricsCollector {
         return String.format(
                 "%s: n=%d, time=%.3fms, comparisons=%d, swaps=%d, allocations=%d, maxDepth=%d",
                 algorithmName, inputSize, getElapsedTimeMillis(),
-                comparisons, swaps, allocations, getMaxDepth()
+                comparisons, swaps, allocations, recordedMaxDepth
         );
     }
 }

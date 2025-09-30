@@ -3,6 +3,7 @@ package org.AITU;
 import org.AITU.algorithms.*;
 import org.AITU.metrics.MetricsCollector;
 import org.AITU.utils.ArrayUtils;
+
 import java.util.Arrays;
 
 public class Main {
@@ -114,7 +115,7 @@ public class Main {
         int maxDepth = MetricsCollector.getMaxDepth();
 
         // Verify depth is bounded
-        int expectedMaxDepth = 2 * (int)(Math.log(n) / Math.log(2)) + 10;
+        int expectedMaxDepth = 2 * (int) (Math.log(n) / Math.log(2)) + 10;
         if (maxDepth > expectedMaxDepth) {
             System.err.printf("  Warning: QuickSort depth %d exceeds expected %d%n",
                     maxDepth, expectedMaxDepth);
@@ -262,7 +263,7 @@ public class Main {
         int[] test4 = ArrayUtils.generateRandomArray(1024);
         quickSort.sort(test4);
         int depth = MetricsCollector.getMaxDepth();
-        int expectedMax = 2 * (int)(Math.log(1024) / Math.log(2)) + 10;
+        int expectedMax = 2 * (int) (Math.log(1024) / Math.log(2)) + 10;
         if (depth <= expectedMax) passed++;
         total++;
 
@@ -277,9 +278,9 @@ public class Main {
 
         // Run 100 random trials
         for (int i = 0; i < total; i++) {
-            int size = 10 + (int)(Math.random() * 990);
+            int size = 10 + (int) (Math.random() * 990);
             int[] arr = ArrayUtils.generateRandomArray(size);
-            int k = (int)(Math.random() * size);
+            int k = (int) (Math.random() * size);
 
             int result = select.select(arr, k);
 
